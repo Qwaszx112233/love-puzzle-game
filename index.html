@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>❤️ Love Number Puzzle ❤️</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
+</head>
+<body>
+  <!-- Floating Hearts Background -->
+  <div class="floating-hearts" id="floatingHearts"></div>
+  
+  <!-- Victory Overlay -->
+  <div class="victory-overlay hidden" id="victoryOverlay">
+    <div class="victory-content">
+      <div class="victory-title">🎉 Вітаю! 🎉</div>
+      <div class="victory-message" id="victoryMessage">Ти пройшла всі рівні! Ти найкраща! 💝</div>
+      <div class="menu-buttons">
+        <button class="menu-btn" id="playAgainBtn">🔄 Грати знову</button>
+        <button class="menu-btn secondary" id="closeWebAppBtn">📱 Закрити</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Menu Screen -->
+  <div class="screen" id="mainMenuScreen">
+    <div class="game-title">❤️ Love Puzzle ❤️</div>
+    <div class="menu-buttons">
+      <button class="menu-btn" id="playBtn">🎮 Грати</button>
+      <button class="menu-btn secondary" id="settingsBtn">⚙️ Налаштування</button>
+      <button class="menu-btn secondary" id="aboutBtn">ℹ️ Про гру</button>
+    </div>
+    <div class="menu-features">
+      <div class="feature-item">💖 Я тебе</div>
+      <div class="feature-item">любаю</div>
+      <div class="feature-item">шо аж</div>
+      <div class="feature-item">кохаю 💖</div>
+    </div>
+  </div>
+  
+  <!-- Game Screen -->
+  <div class="screen game-screen hidden" id="gameScreen">
+    <div class="game-header">
+      <div class="header-top">
+        <button class="home-btn" id="homeBtn">🏠</button>
+        <div class="header">Сонечко, я тебе кохаю ❤️</div>
+      </div>
+      <div class="love-message">
+        <div class="hearts" id="hearts"></div>
+        <div class="message-text" id="messageText">Об'єднуй числа та отримуй любовні фрази! 💕</div>
+      </div>
+      <div class="stats">
+        <div class="stat-item">Рівень: <span id="currentLevel">1</span>/30</div>
+        <div class="stat-item">Ціль: <span id="targetValue">64</span></div>
+        <div class="stat-item">Фраз: <span id="messageCount">0</span></div>
+      </div>
+    </div>
+    
+    <div class="xp-bar">
+      <div class="xp-bar-inner" id="xpBar">
+        <div class="xp-bar-text" id="xpText">0/10</div>
+      </div>
+    </div>
+    
+    <div class="game-content">
+      <div class="bonuses">
+        <button class="bonus-btn" id="bonus-destroy">
+          💖 Розбити <span class="bonus-cost">5</span>
+        </button>
+        <button class="bonus-btn" id="bonus-shuffle">
+          🔄 Перемішати <span class="bonus-cost">10</span>
+        </button>
+        <button class="bonus-btn" id="bonus-explosion">
+          💥 Вибух 3×3 <span class="bonus-cost">20</span>
+        </button>
+      </div>
+      
+      <div class="level-select" id="level-select"></div>
+      
+      <div class="grid-container">
+        <div class="grid" id="grid"></div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn back-btn" id="backBtn">← Назад</button>
+        <button class="btn" id="resetBtn">🔄 Скинути</button>
+        <button class="btn" id="nextLevelBtn">⭐ Далі</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Settings Screen -->
+  <div class="screen settings-screen hidden" id="settingsScreen">
+    <div class="settings-title">Налаштування ⚙️</div>
+    <div class="settings-options">
+      <div class="setting-item">
+        <label class="setting-label">Складність:</label>
+        <select class="setting-control" id="difficultySelect">
+          <option value="easy">Легка</option>
+          <option value="medium" selected>Середня</option>
+          <option value="hard">Складна</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">Звуки:</label>
+        <select class="setting-control" id="soundSelect">
+          <option value="on" selected>Увімкнено</option>
+          <option value="off">Вимкнено</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label class="setting-label">Анімації:</label>
+        <select class="setting-control" id="animationSelect">
+          <option value="on" selected>Увімкнено</option>
+          <option value="off">Вимкнено</option>
+        </select>
+      </div>
+    </div>
+    <div class="menu-buttons" style="margin-top: 20px;">
+      <button class="menu-btn" id="saveSettingsBtn">💾 Зберегти</button>
+      <button class="menu-btn secondary" id="backFromSettingsBtn">← Назад</button>
+    </div>
+  </div>
+  
+  <!-- About Screen -->
+  <div class="screen settings-screen hidden" id="aboutScreen">
+    <div class="settings-title">Про гру ℹ️</div>
+    <div class="settings-options">
+      <div class="setting-item" style="text-align: center;">
+        <h3 style="font-size: clamp(1.1rem, 4vw, 1.3rem); margin-bottom: 10px;">Love Number Puzzle</h3>
+        <p style="margin: 8px 0; line-height: 1.3; font-size: clamp(0.8rem, 3vw, 0.9rem);">
+          Поєднуйте числа та отримуйте любовні фрази! 💕<br>
+          Об'єднуйте однакові числа або числа, що відрізняються вдвічі.
+        </p>
+        <p style="margin: 8px 0; line-height: 1.3; font-size: clamp(0.8rem, 3vw, 0.9rem);">
+          ✨ Особливості:<br>
+          • 30 рівнів складності<br>
+          • Любовні фрази та анімації<br>
+          • Бонуси та спеціальні можливості<br>
+          • Оптимізовано для мобільних<br>
+        </p>
+      </div>
+    </div>
+    <div class="menu-buttons" style="margin-top: 20px;">
+      <button class="menu-btn secondary" id="backFromAboutBtn">← Назад</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

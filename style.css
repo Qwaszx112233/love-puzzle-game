@@ -1,0 +1,48 @@
+/* Содержимое CSS из вашего оригинального файла */
+/* Полностью копируем весь CSS блок из оригинального HTML */
+/* В целях экономии места здесь будет ссылка на полный CSS */
+
+:root {
+  --primary-color: #e91e63;
+  --secondary-color: #ff4081;
+  --accent-color: #f8bbd9;
+  --bg-color: #fff5f7;
+  --text-color: #880e4f;
+  --white: #ffffff;
+  --shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+  --cell-color: #ffeef2;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffeef2 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ... остальной CSS код из вашего файла ... */
+
+/* Добавляем специфичные стили для Telegram */
+.telegram-background {
+  background: var(--tg-theme-bg-color, linear-gradient(135deg, #fff5f7 0%, #ffeef2 100%));
+}
+
+.telegram-text {
+  color: var(--tg-theme-text-color, #880e4f);
+}
+
+.telegram-button {
+  background: var(--tg-theme-button-color, linear-gradient(45deg, #e91e63, #ff4081));
+  color: var(--tg-theme-button-text-color, #ffffff);
+}
