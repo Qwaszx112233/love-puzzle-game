@@ -266,78 +266,6 @@
       gap: 10px;
     }
 
-    .bonuses {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .bonus-btn {
-      padding: 8px 10px;
-      font-size: 0.8rem;
-      border-radius: 6px;
-      border: none;
-      background: var(--cell-color);
-      color: var(--text-color);
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-width: 70px;
-      border: 2px solid var(--accent-color);
-    }
-
-    .bonus-btn:active:not(:disabled) {
-      transform: scale(0.95);
-    }
-
-    .bonus-btn:disabled {
-      background: #f8f8f8;
-      color: #ccc;
-      cursor: not-allowed;
-      border-color: #f8f8f8;
-    }
-
-    .bonus-btn.active {
-      background: var(--primary-color);
-      color: var(--white);
-    }
-
-    .bonus-cost {
-      color: var(--primary-color);
-      font-weight: bold;
-      font-size: 0.6rem;
-    }
-
-    .level-select {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      justify-content: center;
-      margin: 5px 0;
-      max-height: 60px;
-      overflow-y: auto;
-    }
-
-    .level-btn {
-      padding: 6px 0;
-      width: 32px;
-      border-radius: 6px;
-      border: 2px solid var(--accent-color);
-      background: var(--cell-color);
-      color: var(--text-color);
-      font-weight: bold;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .level-btn.selected, .level-btn:active {
-      background: var(--primary-color);
-      color: var(--white);
-      border-color: var(--primary-color);
-    }
-
     .grid-container {
       width: 100%;
       display: flex;
@@ -417,10 +345,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    .cell.valid-next {
-      box-shadow: 0 0 0 2px var(--secondary-color);
-    }
-
     /* Цвета для разных чисел */
     .cell[data-number="2"] { background: #ffb6c1; }
     .cell[data-number="4"] { background: #ffd700; }
@@ -431,8 +355,6 @@
     .cell[data-number="128"] { background: #f0e68c; }
     .cell[data-number="256"] { background: #dda0dd; }
     .cell[data-number="512"] { background: #b0e0e6; }
-    .cell[data-number="1024"] { background: #ffb347; }
-    .cell[data-number="2048"] { background: #c9a0dc; }
 
     .controls {
       display: flex;
@@ -492,15 +414,6 @@
     @keyframes float {
       0% { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(-30px) rotate(360deg); opacity: 0; }
-    }
-
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .floating-hearts {
@@ -665,25 +578,6 @@
         font-size: 1rem;
       }
     }
-
-    @media (max-width: 480px) {
-      .cell {
-        min-height: 40px;
-        min-width: 40px;
-      }
-      
-      .cell-inner {
-        font-size: 0.9rem;
-      }
-      
-      .game-title {
-        font-size: 1.6rem;
-      }
-      
-      .header {
-        font-size: 1.1rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -699,7 +593,7 @@
   <div class="victory-overlay hidden" id="victoryOverlay">
     <div class="victory-content">
       <div class="victory-title">🎉 Вітаю! 🎉</div>
-      <div class="victory-message" id="victoryMessage">Ти пройшла всі рівні! Ти найкраща! 💝</div>
+      <div class="victory-message" id="victoryMessage">Ти пройшла рівень! Ти найкраща! 💝</div>
       <div class="menu-buttons">
         <button class="menu-btn" id="playAgainBtn">🔄 Грати знову</button>
         <button class="menu-btn secondary" id="backToMenuBtn">🏠 Головне меню</button>
@@ -748,20 +642,6 @@
     </div>
     
     <div class="game-content">
-      <div class="bonuses">
-        <button class="bonus-btn" id="bonus-destroy">
-          💖 Розбити <span class="bonus-cost">5</span>
-        </button>
-        <button class="bonus-btn" id="bonus-shuffle">
-          🔄 Перемішати <span class="bonus-cost">10</span>
-        </button>
-        <button class="bonus-btn" id="bonus-explosion">
-          💥 Вибух 3×3 <span class="bonus-cost">20</span>
-        </button>
-      </div>
-      
-      <div class="level-select" id="level-select"></div>
-      
       <div class="grid-container">
         <div class="grid" id="grid"></div>
       </div>
@@ -793,13 +673,6 @@
           <option value="off">Вимкнено</option>
         </select>
       </div>
-      <div class="setting-item">
-        <label class="setting-label">Анімації:</label>
-        <select class="setting-control" id="animationSelect">
-          <option value="on" selected>Увімкнено</option>
-          <option value="off">Вимкнено</option>
-        </select>
-      </div>
     </div>
     <div class="menu-buttons" style="margin-top: 20px;">
       <button class="menu-btn" id="saveSettingsBtn">💾 Зберегти</button>
@@ -813,8 +686,8 @@
     <div class="about-content">
       <p class="about-text">Love Number Puzzle - це гра про кохання та числа! 💕</p>
       <p class="about-text">Об'єднуйте числа та отримуйте любовні послання для вашого коханого!</p>
-      <p class="about-text">🌟 Особливості:<br>• 30 рівнів складності<br>• Любовні фрази<br>• Бонуси та анімації</p>
-      <p class="about-text">🎮 Керування:<br>• Торкайтеся чисел<br>• Створюйте ланцюжки<br>• Використовуйте бонуси</p>
+      <p class="about-text">🌟 Особливості:<br>• 10 рівнів складності<br>• Любовні фрази<br>• Анімації сердечок</p>
+      <p class="about-text">🎮 Керування:<br>• Торкайтеся чисел<br>• Створюйте ланцюжки<br>• Об'єднуйте однакові числа</p>
     </div>
     <div class="menu-buttons" style="margin-top: 20px;">
       <button class="menu-btn secondary" id="backFromAboutBtn">← Назад</button>
@@ -822,10 +695,8 @@
   </div>
 
   <script>
-    // Исправленный JavaScript код из предыдущего ответа
     class LoveNumberPuzzle {
       constructor() {
-        // Инициализация Telegram Web App
         this.tg = window.Telegram?.WebApp || null;
         this.isTelegram = !!this.tg;
         
@@ -857,7 +728,6 @@
         
         this.GRID_W = 5;
         this.GRID_H = 8;
-        this.bonusCosts = { destroy: 5, shuffle: 10, explosion: 20 };
         
         this.currentLevel = 0;
         this.grid = [];
@@ -867,11 +737,9 @@
         this.xp = 0;
         this.xpToNext = 10;
         this.maxNumber = 8;
-        this.activeBonus = null;
         this.gameState = 'playing';
         this.messageCount = 0;
         
-        // Инициализация глобальных обработчиков
         this.handleEndBound = null;
         this.handleMoveBound = null;
         
@@ -882,9 +750,540 @@
         console.log("✅ Игра инициализирована!");
       }
       
-      // ... все остальные методы остаются такими же как в предыдущем исправленном коде ...
-      // (вставить сюда все методы из предыдущего ответа)
+      generateLevels(count) {
+        const levels = [];
+        let target = 64;
+        let baseNumbers = [2, 4, 8];
+        
+        for (let i = 0; i < count; i++) {
+          const level = {
+            numbers: [...baseNumbers],
+            target: target,
+            max: baseNumbers[baseNumbers.length - 1],
+            xpToNext: 10 + Math.floor(i * 2)
+          };
+          
+          levels.push(level);
+          target *= 2;
+          
+          if (i % 3 === 2 && baseNumbers.length < 5) {
+            baseNumbers.push(baseNumbers[baseNumbers.length - 1] * 2);
+          }
+        }
+        
+        return levels;
+      }
       
+      createFloatingHearts() {
+        const container = document.getElementById('floatingHearts');
+        if (!container) return;
+        
+        const heartCount = 8;
+        
+        for (let i = 0; i < heartCount; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'floating-heart';
+          heart.innerHTML = '❤️';
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.top = Math.random() * 100 + 'vh';
+          heart.style.animationDelay = Math.random() * 5 + 's';
+          container.appendChild(heart);
+        }
+      }
+      
+      showScreen(screenName) {
+        console.log("Переключаем экран на:", screenName);
+        
+        const screens = ['mainMenu', 'game', 'settings', 'about'];
+        screens.forEach(screen => {
+          const element = document.getElementById(screen + 'Screen');
+          if (element) {
+            element.classList.add('hidden');
+          }
+        });
+        
+        const victoryOverlay = document.getElementById('victoryOverlay');
+        if (victoryOverlay) {
+          victoryOverlay.classList.add('hidden');
+        }
+        
+        const targetScreen = document.getElementById(screenName + 'Screen');
+        if (targetScreen) {
+          targetScreen.classList.remove('hidden');
+          console.log("✅ Экран показан:", screenName);
+        }
+        
+        if (screenName === 'game') {
+          setTimeout(() => {
+            this.initGame();
+          }, 100);
+        }
+      }
+      
+      initGame(levelNum = 0) {
+        console.log("🚀 Инициализация игры, уровень:", levelNum);
+        
+        this.currentLevel = levelNum;
+        const level = this.levels[this.currentLevel];
+        
+        this.xp = 0;
+        this.xpToNext = level.xpToNext;
+        this.maxNumber = level.max;
+        this.selected = [];
+        this.isDragging = false;
+        this.chainNumbers = [];
+        this.grid = [];
+        this.gameState = 'playing';
+        this.messageCount = 0;
+        
+        for (let x = 0; x < this.GRID_W; x++) {
+          this.grid[x] = [];
+          for (let y = 0; y < this.GRID_H; y++) {
+            this.grid[x][y] = { 
+              number: level.numbers[Math.floor(Math.random() * level.numbers.length)], 
+              merged: false 
+            };
+          }
+        }
+        
+        this.render();
+        this.updateInfo();
+        this.showLoveMessage("Об'єднуй числа та отримуй любовні фрази! 💕");
+      }
+
+      render() {
+        const gridDiv = document.getElementById('grid');
+        if (!gridDiv) return;
+        
+        gridDiv.innerHTML = '';
+        
+        for (let y = 0; y < this.GRID_H; y++) {
+          for (let x = 0; x < this.GRID_W; x++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.x = x;
+            cell.dataset.y = y;
+            cell.dataset.number = this.grid[x][y].number;
+            
+            if (this.selected.some(sel => sel.x === x && sel.y === y)) {
+              cell.classList.add('selected');
+            }
+            
+            if (this.grid[x][y].merged) {
+              cell.classList.add('merged');
+            }
+            
+            cell.addEventListener('mousedown', (e) => this.handleCellStart(e, x, y));
+            cell.addEventListener('mouseenter', (e) => this.handleCellHover(e, x, y));
+            
+            cell.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              this.handleCellStart(e, x, y);
+            });
+            
+            cell.addEventListener('touchmove', (e) => {
+              e.preventDefault();
+              this.handleTouchMove(e);
+            });
+
+            const inner = document.createElement('div');
+            inner.className = 'cell-inner';
+            inner.textContent = this.grid[x][y].number;
+            cell.appendChild(inner);
+            
+            gridDiv.appendChild(cell);
+          }
+        }
+
+        this.setupGlobalHandlers();
+        this.updateXPBar();
+      }
+
+      setupGlobalHandlers() {
+        if (this.handleEndBound) {
+          document.removeEventListener('mouseup', this.handleEndBound);
+          document.removeEventListener('touchend', this.handleEndBound);
+          document.removeEventListener('mousemove', this.handleMoveBound);
+          document.removeEventListener('touchmove', this.handleMoveBound);
+        }
+        
+        this.handleEndBound = this.handleEnd.bind(this);
+        this.handleMoveBound = this.handleMove.bind(this);
+        
+        document.addEventListener('mouseup', this.handleEndBound);
+        document.addEventListener('touchend', this.handleEndBound);
+        document.addEventListener('mousemove', this.handleMoveBound);
+        document.addEventListener('touchmove', this.handleMoveBound, { passive: false });
+      }
+
+      handleCellStart(e, x, y) {
+        e.preventDefault();
+        if (this.gameState !== 'playing') return;
+        
+        this.selected = [{x, y}];
+        this.chainNumbers = [this.grid[x][y].number];
+        this.isDragging = true;
+        this.render();
+      }
+
+      handleCellHover(e, x, y) {
+        if (!this.isDragging) return;
+        
+        if (this.selected.some(sel => sel.x === x && sel.y === y)) return;
+        
+        const last = this.selected[this.selected.length - 1];
+        
+        if (!this.isAdjacent(last, {x, y})) return;
+        
+        const newNum = this.grid[x][y].number;
+        const prevNum = this.chainNumbers[this.chainNumbers.length - 1];
+        
+        if (newNum === prevNum || newNum === prevNum * 2 || prevNum === newNum * 2) {
+          this.selected.push({x, y});
+          this.chainNumbers.push(newNum);
+          this.render();
+        }
+      }
+
+      handleMove(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        let clientX, clientY;
+        
+        if (e.type === 'mousemove') {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        } else if (e.type === 'touchmove') {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        }
+        
+        if (!clientX || !clientY) return;
+        
+        const element = document.elementFromPoint(clientX, clientY);
+        if (element && element.classList.contains('cell')) {
+          const x = parseInt(element.dataset.x);
+          const y = parseInt(element.dataset.y);
+          this.handleCellHover(e, x, y);
+        }
+      }
+
+      handleTouchMove(e) {
+        if (!this.isDragging) return;
+        
+        e.preventDefault();
+        const touch = e.touches[0];
+        const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+        
+        for (let element of elements) {
+          if (element.classList.contains('cell')) {
+            const x = parseInt(element.dataset.x);
+            const y = parseInt(element.dataset.y);
+            
+            if (this.selected.some(sel => sel.x === x && sel.y === y)) continue;
+            
+            const last = this.selected[this.selected.length - 1];
+            
+            if (!this.isAdjacent(last, {x, y})) continue;
+            
+            const newNum = this.grid[x][y].number;
+            const prevNum = this.chainNumbers[this.chainNumbers.length - 1];
+            
+            if (newNum === prevNum || newNum === prevNum * 2 || prevNum === newNum * 2) {
+              this.selected.push({x, y});
+              this.chainNumbers.push(newNum);
+              this.render();
+              break;
+            }
+          }
+        }
+      }
+
+      handleEnd() {
+        if (!this.isDragging) return;
+        
+        if (this.selected.length >= 2) {
+          this.mergeChain();
+        } else {
+          this.selected = [];
+          this.chainNumbers = [];
+          this.render();
+        }
+        
+        this.isDragging = false;
+      }
+
+      isAdjacent(a, b) {
+        const dx = Math.abs(a.x - b.x);
+        const dy = Math.abs(a.y - b.y);
+        return (dx <= 1 && dy <= 1) && !(dx === 0 && dy === 0);
+      }
+
+      mergeChain() {
+        const lastCell = this.selected[this.selected.length - 1];
+        let newValue;
+        
+        if (this.areAllNumbersEqual(this.chainNumbers)) {
+          newValue = this.chainNumbers[0] * this.chainNumbers.length;
+        } else {
+          newValue = this.calculateChainValue(this.chainNumbers);
+        }
+        
+        if (!this.isValidResultNumber(newValue)) {
+          this.showLoveMessage("Спробуй іншу комбінацію! 💕");
+          this.selected = [];
+          this.chainNumbers = [];
+          this.render();
+          return;
+        }
+        
+        this.grid[lastCell.x][lastCell.y].number = newValue;
+        this.grid[lastCell.x][lastCell.y].merged = true;
+        
+        for (let i = 0; i < this.selected.length - 1; i++) {
+          const {x, y} = this.selected[i];
+          this.grid[x][y].number = this.getRandomInitialNumber();
+          this.grid[x][y].merged = false;
+        }
+        
+        const xpEarned = this.calculateXP(this.selected.length);
+        this.xp += xpEarned;
+        
+        this.showRandomLoveMessage(this.selected.length);
+        
+        if (newValue > this.maxNumber) {
+          this.maxNumber = newValue;
+        }
+        
+        setTimeout(() => {
+          for (let x = 0; x < this.GRID_W; x++) {
+            for (let y = 0; y < this.GRID_H; y++) {
+              this.grid[x][y].merged = false;
+            }
+          }
+          
+          this.selected = [];
+          this.chainNumbers = [];
+          this.render();
+          this.checkWin();
+        }, 500);
+        
+        this.updateInfo();
+      }
+
+      areAllNumbersEqual(numbers) {
+        if (numbers.length <= 1) return true;
+        const first = numbers[0];
+        return numbers.every(num => num === first);
+      }
+
+      calculateChainValue(numbers) {
+        if (numbers.length === 2) {
+          return numbers[0] + numbers[1];
+        } else {
+          let result = numbers[0];
+          for (let i = 1; i < numbers.length; i++) {
+            if (numbers[i] === result * 2 || result === numbers[i] * 2) {
+              result = Math.max(result, numbers[i]) * 1.5;
+            } else {
+              result += numbers[i];
+            }
+          }
+          return Math.round(result);
+        }
+      }
+
+      isValidResultNumber(num) {
+        const level = this.levels[this.currentLevel];
+        const minNumber = Math.min(...level.numbers);
+        return num >= minNumber && num <= level.target * 2;
+      }
+
+      getRandomInitialNumber() {
+        const level = this.levels[this.currentLevel];
+        return level.numbers[Math.floor(Math.random() * level.numbers.length)];
+      }
+
+      calculateXP(chainLen) {
+        if (chainLen === 2) return 1;
+        if (chainLen === 3) return 3;
+        if (chainLen === 4) return 6;
+        if (chainLen === 5) return 10;
+        if (chainLen >= 6) return 15;
+        return 0;
+      }
+
+      showRandomLoveMessage(chainLength) {
+        this.messageCount++;
+        document.getElementById('messageCount').textContent = this.messageCount;
+        
+        let message;
+        if (chainLength >= 6) {
+          message = "Вау! Ти геній кохання! 💖 Наша любов така ж сильна!";
+        } else if (chainLength >= 4) {
+          message = "Чудово! Наша любов росте як твої навички! 🌟";
+        } else {
+          const randomIndex = Math.floor(Math.random() * this.loveMessages.length);
+          message = this.loveMessages[randomIndex];
+        }
+        
+        this.showLoveMessage(message);
+        this.createHeartsAnimation();
+      }
+
+      createHeartsAnimation() {
+        const heartsContainer = document.getElementById('hearts');
+        if (!heartsContainer) return;
+        
+        heartsContainer.innerHTML = '';
+        const heartCount = 3;
+        
+        for (let i = 0; i < heartCount; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'heart';
+          heart.innerHTML = '❤️';
+          heart.style.left = Math.random() * 80 + 10 + '%';
+          heart.style.animationDelay = Math.random() * 0.5 + 's';
+          heartsContainer.appendChild(heart);
+        }
+      }
+
+      checkWin() {
+        const level = this.levels[this.currentLevel];
+        let targetReached = false;
+        
+        for (let x = 0; x < this.GRID_W; x++) {
+          for (let y = 0; y < this.GRID_H; y++) {
+            if (this.grid[x][y].number === level.target) {
+              targetReached = true;
+              break;
+            }
+          }
+          if (targetReached) break;
+        }
+        
+        if (targetReached && this.gameState === 'playing') {
+          this.gameState = 'win';
+          this.showLoveMessage(`Вітаю! Ти досягла цілі ${level.target}! 🎉❤️`);
+          this.showVictoryScreen();
+        }
+      }
+
+      showVictoryScreen() {
+        const victoryOverlay = document.getElementById('victoryOverlay');
+        const victoryMessage = document.getElementById('victoryMessage');
+        
+        if (victoryOverlay && victoryMessage) {
+          victoryMessage.textContent = `Ти пройшла рівень ${this.currentLevel + 1}! Ти найкраща! 💝`;
+          victoryOverlay.classList.remove('hidden');
+        }
+      }
+      
+      updateInfo() {
+        const level = this.levels[this.currentLevel];
+        
+        const currentLevelEl = document.getElementById('currentLevel');
+        const targetValueEl = document.getElementById('targetValue');
+        const messageCountEl = document.getElementById('messageCount');
+        
+        if (currentLevelEl) currentLevelEl.textContent = this.currentLevel + 1;
+        if (targetValueEl) targetValueEl.textContent = level.target;
+        if (messageCountEl) messageCountEl.textContent = this.messageCount;
+      }
+      
+      updateXPBar() {
+        const xpBar = document.getElementById('xpBar');
+        const xpText = document.getElementById('xpText');
+        
+        if (xpBar && xpText) {
+          const percent = Math.min(1, this.xp / this.xpToNext);
+          xpBar.style.width = (percent * 100) + '%';
+          xpText.textContent = `${this.xp}/${this.xpToNext}`;
+        }
+      }
+      
+      showLoveMessage(text) {
+        const messageEl = document.getElementById('messageText');
+        if (messageEl) {
+          messageEl.textContent = text;
+        }
+      }
+      
+      initializeEventListeners() {
+        // Main menu buttons
+        const playBtn = document.getElementById('playBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const aboutBtn = document.getElementById('aboutBtn');
+        
+        if (playBtn) playBtn.addEventListener('click', () => {
+          this.showScreen('game');
+        });
+        
+        if (settingsBtn) settingsBtn.addEventListener('click', () => {
+          this.showScreen('settings');
+        });
+        
+        if (aboutBtn) aboutBtn.addEventListener('click', () => {
+          this.showScreen('about');
+        });
+        
+        // Game screen buttons
+        const homeBtn = document.getElementById('homeBtn');
+        const backBtn = document.getElementById('backBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const nextLevelBtn = document.getElementById('nextLevelBtn');
+        
+        if (homeBtn) homeBtn.addEventListener('click', () => {
+          this.showScreen('mainMenu');
+        });
+        
+        if (backBtn) backBtn.addEventListener('click', () => {
+          this.showScreen('mainMenu');
+        });
+        
+        if (resetBtn) resetBtn.addEventListener('click', () => {
+          this.initGame(this.currentLevel);
+        });
+        
+        if (nextLevelBtn) nextLevelBtn.addEventListener('click', () => {
+          if (this.currentLevel < this.MAX_LEVEL - 1) {
+            this.initGame(this.currentLevel + 1);
+          }
+        });
+        
+        // Settings screen buttons
+        const backFromSettingsBtn = document.getElementById('backFromSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        
+        if (backFromSettingsBtn) backFromSettingsBtn.addEventListener('click', () => {
+          this.showScreen('mainMenu');
+        });
+        
+        if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', () => {
+          this.showScreen('mainMenu');
+        });
+        
+        // About screen buttons
+        const backFromAboutBtn = document.getElementById('backFromAboutBtn');
+        if (backFromAboutBtn) backFromAboutBtn.addEventListener('click', () => {
+          this.showScreen('mainMenu');
+        });
+        
+        // Victory screen buttons
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const backToMenuBtn = document.getElementById('backToMenuBtn');
+        
+        if (playAgainBtn) playAgainBtn.addEventListener('click', () => {
+          document.getElementById('victoryOverlay').classList.add('hidden');
+          this.initGame(0);
+        });
+        
+        if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => {
+          document.getElementById('victoryOverlay').classList.add('hidden');
+          this.showScreen('mainMenu');
+        });
+      }
     }
 
     // Запускаем игру когда страница загружена
