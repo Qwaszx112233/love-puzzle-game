@@ -3,39 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>❤️ Love Number Puzzle ❤️</title>
+  <title>💖 Love Number Puzzle - Для моєї коханої 💖</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
+  <style>
+    /* Дополнительные романтические стили */
+    .romantic-particle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.2em;
+      z-index: 100;
+      animation: romanticFloat 3s ease-in-out forwards;
+    }
+    
+    @keyframes romanticFloat {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    .chain-line {
+      position: absolute;
+      background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+      height: 4px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 50;
+      transition: all 0.3s ease;
+    }
+    
+    .touch-glow {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(255,107,107,0.4) 0%, rgba(255,107,107,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 60;
+      animation: touchPulse 0.6s ease-out forwards;
+    }
+    
+    @keyframes touchPulse {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
-  <!-- Floating Hearts Background -->
+  <!-- Enhanced Floating Hearts Background -->
   <div class="floating-hearts" id="floatingHearts"></div>
+  
+  <!-- Romantic Particles Container -->
+  <div id="romanticParticles"></div>
   
   <!-- Victory Overlay -->
   <div class="victory-overlay hidden" id="victoryOverlay">
     <div class="victory-content">
-      <div class="victory-title">🎉 Вітаю! 🎉</div>
-      <div class="victory-message" id="victoryMessage">Ти пройшла всі рівні! Ти найкраща! 💝</div>
+      <div class="victory-title">💝 Моя любов! 💝</div>
+      <div class="victory-message" id="victoryMessage">Ти пройшла всі рівні! Ти найкраща дружина у світі! 💖</div>
       <div class="menu-buttons">
-        <button class="menu-btn" id="playAgainBtn">🔄 Грати знову</button>
-        <button class="menu-btn secondary" id="closeWebAppBtn">📱 Закрити</button>
+        <button class="menu-btn" id="playAgainBtn">💕 Грати знову</button>
+        <button class="menu-btn secondary" id="closeWebAppBtn">😘 Поцілунок</button>
       </div>
     </div>
   </div>
   
   <!-- Main Menu Screen -->
   <div class="screen" id="mainMenuScreen">
-    <div class="game-title">❤️ Love Puzzle ❤️</div>
+    <div class="game-title">💖 Love Puzzle 💖</div>
+    <div class="romantic-subtitle">Для моєї найкращої дружини</div>
     <div class="menu-buttons">
-      <button class="menu-btn" id="playBtn">🎮 Грати</button>
-      <button class="menu-btn secondary" id="settingsBtn">⚙️ Налаштування</button>
-      <button class="menu-btn secondary" id="aboutBtn">ℹ️ Про гру</button>
+      <button class="menu-btn" id="playBtn">🎮 Почати гру кохання</button>
+      <button class="menu-btn secondary" id="settingsBtn">💝 Налаштування</button>
+      <button class="menu-btn secondary" id="aboutBtn">🌹 Про наше кохання</button>
     </div>
     <div class="menu-features">
       <div class="feature-item">💖 Я тебе</div>
-      <div class="feature-item">любаю</div>
-      <div class="feature-item">шо аж</div>
-      <div class="feature-item">кохаю 💖</div>
+      <div class="feature-item">кохаю</div>
+      <div class="feature-item">більше</div>
+      <div class="feature-item">за все 💖</div>
     </div>
   </div>
   
@@ -43,12 +88,12 @@
   <div class="screen game-screen hidden" id="gameScreen">
     <div class="game-header">
       <div class="header-top">
-        <button class="home-btn" id="homeBtn">🏠</button>
-        <div class="header">Сонечко, я тебе кохаю ❤️</div>
+        <button class="home-btn" id="homeBtn">🏠 Додому</button>
+        <div class="header">Моя любов, я тебе обожнюю! 💕</div>
       </div>
       <div class="love-message">
         <div class="hearts" id="hearts"></div>
-        <div class="message-text" id="messageText">Об'єднуй числа та отримуй любовні фрази! 💕</div>
+        <div class="message-text" id="messageText">Проведи пальчиком по числах та отримуй любовні фрази! 🌸</div>
       </div>
       <div class="stats">
         <div class="stat-item">Рівень: <span id="currentLevel">1</span>/30</div>
@@ -72,7 +117,7 @@
           🔄 Перемішати <span class="bonus-cost">10</span>
         </button>
         <button class="bonus-btn" id="bonus-explosion">
-          💥 Вибух 3×3 <span class="bonus-cost">20</span>
+          💥 Вибух кохання <span class="bonus-cost">20</span>
         </button>
       </div>
       
@@ -82,71 +127,441 @@
         <div class="grid" id="grid"></div>
       </div>
       
+      <div class="swipe-hint">👆 Проведи пальцем по числах для створення ланцюжка</div>
+      
       <div class="controls">
-        <button class="btn back-btn" id="backBtn">← Назад</button>
-        <button class="btn" id="resetBtn">🔄 Скинути</button>
-        <button class="btn" id="nextLevelBtn">⭐ Далі</button>
+        <button class="btn back-btn" id="backBtn">← До коханої</button>
+        <button class="btn" id="resetBtn">🔄 Почати знову</button>
+        <button class="btn" id="nextLevelBtn">⭐ Далі до щастя</button>
       </div>
-    </div>
-  </div>
-  
-  <!-- Settings Screen -->
-  <div class="screen settings-screen hidden" id="settingsScreen">
-    <div class="settings-title">Налаштування ⚙️</div>
-    <div class="settings-options">
-      <div class="setting-item">
-        <label class="setting-label">Складність:</label>
-        <select class="setting-control" id="difficultySelect">
-          <option value="easy">Легка</option>
-          <option value="medium" selected>Середня</option>
-          <option value="hard">Складна</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">Звуки:</label>
-        <select class="setting-control" id="soundSelect">
-          <option value="on" selected>Увімкнено</option>
-          <option value="off">Вимкнено</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <label class="setting-label">Анімації:</label>
-        <select class="setting-control" id="animationSelect">
-          <option value="on" selected>Увімкнено</option>
-          <option value="off">Вимкнено</option>
-        </select>
-      </div>
-    </div>
-    <div class="menu-buttons" style="margin-top: 20px;">
-      <button class="menu-btn" id="saveSettingsBtn">💾 Зберегти</button>
-      <button class="menu-btn secondary" id="backFromSettingsBtn">← Назад</button>
-    </div>
-  </div>
-  
-  <!-- About Screen -->
-  <div class="screen settings-screen hidden" id="aboutScreen">
-    <div class="settings-title">Про гру ℹ️</div>
-    <div class="settings-options">
-      <div class="setting-item" style="text-align: center;">
-        <h3 style="font-size: clamp(1.1rem, 4vw, 1.3rem); margin-bottom: 10px;">Love Number Puzzle</h3>
-        <p style="margin: 8px 0; line-height: 1.3; font-size: clamp(0.8rem, 3vw, 0.9rem);">
-          Поєднуйте числа та отримуйте любовні фрази! 💕<br>
-          Об'єднуйте однакові числа або числа, що відрізняються вдвічі.
-        </p>
-        <p style="margin: 8px 0; line-height: 1.3; font-size: clamp(0.8rem, 3vw, 0.9rem);">
-          ✨ Особливості:<br>
-          • 30 рівнів складності<br>
-          • Любовні фрази та анімації<br>
-          • Бонуси та спеціальні можливості<br>
-          • Оптимізовано для мобільних<br>
-        </p>
-      </div>
-    </div>
-    <div class="menu-buttons" style="margin-top: 20px;">
-      <button class="menu-btn secondary" id="backFromAboutBtn">← Назад</button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    class LoveNumberPuzzle {
+      constructor() {
+        // Инициализация Telegram Web App
+        try {
+          this.tg = window.Telegram?.WebApp;
+          if (this.tg) {
+            console.log("Telegram Web App обнаружен, инициализация...");
+            this.initTelegramApp();
+          } else {
+            console.log("Telegram Web App не обнаружен, запуск в standalone режиме");
+            this.isTelegram = false;
+          }
+        } catch (error) {
+          console.log("Ошибка инициализации Telegram Web App:", error);
+          this.isTelegram = false;
+        }
+        
+        // Инициализация игры
+        this.levels = this.generateLevels(30);
+        this.MAX_LEVEL = this.levels.length;
+        
+        // Увеличенный список любовных фраз
+        this.loveMessages = [
+          "Ти - моє сонечко, що освітлює кожен мій день 🌞",
+          "Кохання до тебе з кожним днем стає сильнішим 💖",
+          "Твої очі - це зірки, що вказують мені шлях ✨",
+          "З тобою кожна мить - це казка 🏰",
+          "Ти - найніжніша мрія моєї душі 💭",
+          "Твої обійми - мій улюблений захист 🤗",
+          "Кожна частинка тебе чарівна 🪄",
+          "Ти робиш моє життя солодшим 🍯",
+          "Ти - моя улюблена панда серед усіх панд 🐼",
+          "Люблю тебе сильніше, ніж коти люблять коробки 📦",
+          "Ти - моє щастя, як морозиво в спекотний день 🍦",
+          "Твоя посмішка - найкрасивіший пейзаж 😊",
+          "Любов до тебе - вічна і безмежна ♾️",
+          "Ти - мій спокій серед бурі 🌊",
+          "З тобою я знайшов справжнє щастя 🥹",
+          "Твоє серце - мій найцінніший скарб 💎",
+          "Кожна мить з тобою - це подарунок 🎁",
+          "Ти робиш моє життя яскравішим 🌈",
+          "Моє кохання до тебе безмежне, як океан 🌊",
+          "Ти - причина моєї посмішки кожного дня 😊",
+          "Твоя любов - найкраще, що сталося в моєму житті 💝",
+          "З тобою я можу досягти будь-чого! 🚀",
+          "Ти - моя муза та натхнення 🎨",
+          "Кожен день з тобою - це нова пригода 🗺️",
+          "Твоя присутність робить все кращим ✨",
+          "Ти - моя тиха гавань у бурхливому морі ⚓",
+          "Люблю тебе більше, ніж слова можуть передати 💌",
+          "Ти - мій щасливий квиток у житті 🎫",
+          "З тобою кожен день - свято 🎉",
+          "Ти - відповідь на всі мої молитви 🙏",
+          // Новые романтические фразы
+          "Моє серце належить тобі назавжди 💘",
+          "Ти - моя друга половинка, яку я шукав все життя 💑",
+          "Кожна клітинка мого тіла любить тебе 🔬",
+          "Ти - моя мрія, яка збулася 🌠",
+          "Люблю тебе до місяця і назад 🌙",
+          "Твоя любов - моя найбільша сила 💪",
+          "Ти робиш моє життя справді значущим 🎯",
+          "Моє кохання до тебе без умов і кордонів 💞",
+          "Ти - найкраща дружина у всій Всесвіті 🌌",
+          "Люблю тебе більше, ніж вчора, але менше, ніж завтра 📅"
+        ];
+        
+        this.GRID_W = 5;
+        this.GRID_H = 8;
+        this.bonusCosts = { destroy: 5, shuffle: 10, explosion: 20 };
+        
+        this.currentLevel = 0;
+        this.grid = [];
+        this.selected = [];
+        this.isDragging = false;
+        this.chainNumbers = [];
+        this.xp = 0;
+        this.xpToNext = 10;
+        this.maxNumber = 8;
+        this.activeBonus = null;
+        this.gameState = 'playing';
+        this.messageCount = 0;
+        
+        // Новая переменная для отслеживания последней позиции касания
+        this.lastTouchPos = null;
+        
+        this.createEnhancedFloatingHearts();
+        this.initializeEventListeners();
+        this.showScreen('mainMenu');
+        
+        document.addEventListener('dblclick', (e) => e.preventDefault());
+      }
+      
+      createEnhancedFloatingHearts() {
+        const container = document.getElementById('floatingHearts');
+        if (!container) return;
+        
+        const heartCount = 25; // Увеличили количество сердечек
+        container.innerHTML = '';
+        
+        const heartTypes = ['❤️', '💖', '💕', '💗', '💓', '💞', '💘', '💝'];
+        
+        for (let i = 0; i < heartCount; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'floating-heart';
+          heart.innerHTML = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.top = Math.random() * 100 + 'vh';
+          heart.style.animationDelay = Math.random() * 8 + 's';
+          heart.style.fontSize = (Math.random() * 1 + 0.8) + 'em';
+          heart.style.animationDuration = (15 + Math.random() * 15) + 's';
+          container.appendChild(heart);
+        }
+      }
+      
+      createRomanticParticle(x, y, emoji) {
+        const container = document.getElementById('romanticParticles');
+        if (!container) return;
+        
+        const particle = document.createElement('div');
+        particle.className = 'romantic-particle';
+        particle.innerHTML = emoji;
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.fontSize = (Math.random() * 1 + 1) + 'em';
+        
+        container.appendChild(particle);
+        
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 3000);
+      }
+      
+      createTouchGlow(x, y) {
+        const glow = document.createElement('div');
+        glow.className = 'touch-glow';
+        glow.style.left = (x - 30) + 'px';
+        glow.style.top = (y - 30) + 'px';
+        
+        document.body.appendChild(glow);
+        
+        setTimeout(() => {
+          if (glow.parentNode) {
+            glow.parentNode.removeChild(glow);
+          }
+        }, 600);
+      }
+      
+      // Новая улучшенная обработка касаний
+      initializeEventListeners() {
+        try {
+          // Main menu buttons
+          document.getElementById('playBtn').addEventListener('click', () => {
+            this.startGame();
+          });
+          
+          document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.showScreen('settings');
+          });
+          
+          document.getElementById('aboutBtn').addEventListener('click', () => {
+            this.showScreen('about');
+          });
+          
+          // Home button in game screen
+          document.getElementById('homeBtn').addEventListener('click', () => {
+            this.showScreen('mainMenu');
+          });
+          
+          // Back buttons
+          document.getElementById('backBtn').addEventListener('click', () => {
+            this.showScreen('mainMenu');
+          });
+          
+          document.getElementById('backFromSettingsBtn').addEventListener('click', () => {
+            this.showScreen('mainMenu');
+          });
+          
+          document.getElementById('backFromAboutBtn').addEventListener('click', () => {
+            this.showScreen('mainMenu');
+          });
+          
+          // Victory screen buttons
+          document.getElementById('playAgainBtn').addEventListener('click', () => {
+            this.hideVictoryScreen();
+            this.startGame();
+          });
+          
+          document.getElementById('closeWebAppBtn').addEventListener('click', () => {
+            if (this.isTelegram) {
+              this.tg.close();
+            } else {
+              this.showScreen('mainMenu');
+            }
+          });
+          
+          // Settings
+          document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            this.showScreen('mainMenu');
+          });
+          
+          // Game buttons
+          document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
+          document.getElementById('nextLevelBtn').addEventListener('click', () => this.nextLevel());
+          
+          document.getElementById('bonus-destroy').addEventListener('click', () => this.activateBonus('destroy'));
+          document.getElementById('bonus-shuffle').addEventListener('click', () => this.activateBonus('shuffle'));
+          document.getElementById('bonus-explosion').addEventListener('click', () => this.activateBonus('explosion'));
+          
+          // Улучшенная обработка свайпов для сетки
+          this.initializeSwipeHandling();
+          
+          document.addEventListener('contextmenu', e => e.preventDefault());
+          
+        } catch (error) {
+          console.error("Ошибка инициализации обработчиков событий:", error);
+        }
+      }
+      
+      initializeSwipeHandling() {
+        const grid = document.getElementById('grid');
+        if (!grid) return;
+        
+        // Обработка начала касания
+        grid.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (this.gameState !== 'playing') return;
+          
+          const touch = e.touches[0];
+          const cell = this.getCellFromPoint(touch.clientX, touch.clientY);
+          
+          if (cell) {
+            this.isDragging = true;
+            this.lastTouchPos = { x: touch.clientX, y: touch.clientY };
+            this.handleCellStart(e, cell.x, cell.y);
+            this.createTouchGlow(touch.clientX, touch.clientY);
+          }
+        }, { passive: false });
+        
+        // Обработка движения пальца
+        grid.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          if (!this.isDragging) return;
+          
+          const touch = e.touches[0];
+          this.lastTouchPos = { x: touch.clientX, y: touch.clientY };
+          
+          const cell = this.getCellFromPoint(touch.clientX, touch.clientY);
+          if (cell && !this.selected.some(sel => sel.x === cell.x && sel.y === cell.y)) {
+            this.handleCellHover(cell.x, cell.y);
+          }
+          
+          // Создаем эффект следования за пальцем
+          this.createRomanticParticle(touch.clientX, touch.clientY, '💖');
+          
+        }, { passive: false });
+        
+        // Обработка окончания касания
+        grid.addEventListener('touchend', (e) => {
+          if (this.isDragging) {
+            this.handleEnd();
+            this.isDragging = false;
+            this.lastTouchPos = null;
+          }
+        });
+        
+        // Также добавляем обработку мыши для тестирования
+        grid.addEventListener('mousedown', (e) => {
+          if (this.gameState !== 'playing') return;
+          
+          const cell = this.getCellFromPoint(e.clientX, e.clientY);
+          if (cell) {
+            this.isDragging = true;
+            this.handleCellStart(e, cell.x, cell.y);
+            this.createTouchGlow(e.clientX, e.clientY);
+          }
+        });
+        
+        grid.addEventListener('mousemove', (e) => {
+          if (!this.isDragging) return;
+          
+          const cell = this.getCellFromPoint(e.clientX, e.clientY);
+          if (cell && !this.selected.some(sel => sel.x === cell.x && sel.y === cell.y)) {
+            this.handleCellHover(cell.x, cell.y);
+          }
+        });
+        
+        grid.addEventListener('mouseup', () => {
+          if (this.isDragging) {
+            this.handleEnd();
+            this.isDragging = false;
+          }
+        });
+      }
+      
+      getCellFromPoint(clientX, clientY) {
+        const grid = document.getElementById('grid');
+        if (!grid) return null;
+        
+        const rect = grid.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        const cellWidth = rect.width / this.GRID_W;
+        const cellHeight = rect.height / this.GRID_H;
+        
+        const cellX = Math.floor(x / cellWidth);
+        const cellY = Math.floor(y / cellHeight);
+        
+        if (cellX >= 0 && cellX < this.GRID_W && cellY >= 0 && cellY < this.GRID_H) {
+          return { x: cellX, y: cellY };
+        }
+        
+        return null;
+      }
+      
+      handleCellStart(e, x, y) {
+        try {
+          if (this.gameState !== 'playing') return;
+          
+          if (this.activeBonus === 'destroy') {
+            this.useDestroyBonus(x, y);
+            return;
+          }
+          
+          if (this.activeBonus === 'explosion') {
+            this.useExplosionBonus(x, y);
+            return;
+          }
+          
+          this.selected = [{x, y}];
+          this.chainNumbers = [this.grid[x][y].number];
+          this.render();
+          
+          // Создаем романтическую частицу
+          this.createRomanticParticle(e.clientX || (e.touches && e.touches[0].clientX), 
+                                    e.clientY || (e.touches && e.touches[0].clientY), '💕');
+        } catch (error) {
+          console.error("Ошибка обработки начала выбора:", error);
+        }
+      }
+      
+      handleCellHover(x, y) {
+        if (!this.isDragging || this.activeBonus) return;
+        
+        try {
+          const last = this.selected[this.selected.length - 1];
+          if (!this.isAdjacent(last, {x, y})) return;
+          
+          const newNum = this.grid[x][y].number;
+          const prevNum = this.chainNumbers[this.chainNumbers.length - 1];
+          if (newNum === prevNum || newNum === prevNum * 2 || prevNum === newNum * 2) {
+            this.selected.push({x, y});
+            this.chainNumbers.push(newNum);
+            this.render();
+            
+            // Создаем романтическую частицу при добавлении в цепочку
+            if (this.lastTouchPos) {
+              this.createRomanticParticle(this.lastTouchPos.x, this.lastTouchPos.y, '🌸');
+            }
+          }
+        } catch (error) {
+          console.error("Ошибка обработки наведения на ячейку:", error);
+        }
+      }
+      
+      // Остальные методы остаются примерно такими же, но с улучшенной визуализацией
+      // ... (остальной код из предыдущей версии)
+      
+      showRandomLoveMessage(chainLength) {
+        try {
+          this.messageCount++;
+          document.getElementById('messageCount').textContent = this.messageCount;
+          
+          let message;
+          if (chainLength >= 6) {
+            message = "Вау! Ти геній кохання! 💖 Наша любов така ж сильна!";
+            // Создаем особые эффекты для длинных цепочек
+            for (let i = 0; i < 10; i++) {
+              setTimeout(() => {
+                this.createRomanticParticle(
+                  Math.random() * window.innerWidth,
+                  Math.random() * window.innerHeight,
+                  '💝'
+                );
+              }, i * 100);
+            }
+          } else if (chainLength >= 4) {
+            message = "Чудово! Наша любов росте як твої навички! 🌟";
+          } else {
+            const randomIndex = Math.floor(Math.random() * this.loveMessages.length);
+            message = this.loveMessages[randomIndex];
+          }
+          
+          this.showLoveMessage(message);
+          this.createHeartsAnimation();
+        } catch (error) {
+          console.error("Ошибка показа сообщения:", error);
+        }
+      }
+      
+      // ... (остальные методы)
+    }
+
+    // Инициализация игры
+    function initializeGame() {
+      try {
+        if (window.Telegram?.WebApp) {
+          Telegram.WebApp.ready();
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          window.game = new LoveNumberPuzzle();
+        });
+      } catch (error) {
+        console.error("Ошибка инициализации игры:", error);
+        document.addEventListener('DOMContentLoaded', () => {
+          window.game = new LoveNumberPuzzle();
+        });
+      }
+    }
+
+    initializeGame();
+  </script>
 </body>
 </html>
