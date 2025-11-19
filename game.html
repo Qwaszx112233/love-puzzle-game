@@ -1102,8 +1102,18 @@
       mergeChain() {
         console.log("🔄 Объединение цепочки:", this.chainNumbers);
         
-        const last = this.selected[this.selected.length - 1];
-        const newValue = this.chainNumbers.reduce((sum, val) => sum + val, 0);
+        const lastCell = this.selected[this.selected.length - 1];
+        
+        // ВАЖНОЕ ИСПРАВЛЕНИЕ: Правильный расчет нового числа
+        // Вместо суммы используем умножение для цепочек одинаковых чисел
+        let newValue;
+        if (this.areAllNumbersEqual(this.chainNumbers)) {
+          // Если все числа одинаковые - умножаем
+          newValue = this.chainNumbers[0] * this.chainNumbers.length;
+        } else {
+          // Если числа разные - используем специальную логику
+          newValue = this.calculateChainValue(this.chainNumbers);
+        }
         
         console.log("Новое значение:", newValue);
         
@@ -1116,11 +1126,12 @@
           return;
         }
         
-        // Обновляем последнюю ячейку
-        this.grid[last.x][last.y].number = newValue;
-        this.grid[last.x][last.y].merged = true;
+        // ОБНОВЛЕННАЯ ЛОГИКА:
+        // 1. Последний блок цепочки преобразуется в новое число
+        this.grid[lastCell.x][lastCell.y].number = newValue;
+        this.grid[lastCell.x][lastCell.y].merged = true;
         
-        // Очищаем остальные ячейки в цепочке
+        // 2. Все остальные блоки цепочки заменяются на случайные числа
         for (let i = 0; i < this.selected.length - 1; i++) {
           const {x, y} = this.selected[i];
           this.grid[x][y].number = this.getRandomInitialNumber();
@@ -1132,6 +1143,9 @@
         this.xp += xpEarned;
         
         console.log("💫 Получено опыта:", xpEarned);
+        console.log("🔢 Результат объединения:");
+        console.log("- Последняя ячейка:", lastCell.x, lastCell.y, "→", newValue);
+        console.log("- Остальные ячейки заменены на случайные числа");
         
         // Показываем сообщение
         this.showRandomLoveMessage(this.selected.length);
@@ -1158,9 +1172,37 @@
         console.log("✅ Цепочка объединена!");
       }
 
+      // Проверяет, все ли числа в цепочке одинаковые
+      areAllNumbersEqual(numbers) {
+        if (numbers.length <= 1) return true;
+        const first = numbers[0];
+        return numbers.every(num => num === first);
+      }
+
+      // Специальная логика расчета значения для разных чисел
+      calculateChainValue(numbers) {
+        if (numbers.length === 2) {
+          // Для двух разных чисел - сумма
+          return numbers[0] + numbers[1];
+        } else {
+          // Для более длинных цепочек - специальная формула
+          let result = numbers[0];
+          for (let i = 1; i < numbers.length; i++) {
+            if (numbers[i] === result * 2 || result === numbers[i] * 2) {
+              result = Math.max(result, numbers[i]) * 1.5;
+            } else {
+              result += numbers[i];
+            }
+          }
+          return Math.round(result);
+        }
+      }
+
       isValidResultNumber(num) {
         const level = this.levels[this.currentLevel];
-        return num >= 2 && num <= level.target * 2;
+        // Разрешаем числа от минимального до target*2
+        const minNumber = Math.min(...level.numbers);
+        return num >= minNumber && num <= level.target * 2;
       }
 
       getRandomInitialNumber() {
