@@ -67,9 +67,11 @@ class LoveNumberPuzzle {
         this.activeBonus = null;
         this.gameState = 'playing';
         this.messageCount = 0;
+        this.totalMoves = 0;
         
         this.createFloatingHearts();
         this.initializeEventListeners();
+        this.setupAutoSave();
         this.showScreen('mainMenu');
         
         document.addEventListener('dblclick', (e) => e.preventDefault());
@@ -122,6 +124,128 @@ class LoveNumberPuzzle {
         return '#' + color.replace(/^#/, '').replace(/../g, color => 
             ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2)
         );
+    }
+    
+    // Методы для работы с прогрессом
+    async saveProgress() {
+        try {
+            const gameState = {
+                currentLevel: this.currentLevel,
+                grid: this.grid,
+                xp: this.xp,
+                xpToNext: this.xpToNext,
+                maxNumber: this.maxNumber,
+                messageCount: this.messageCount,
+                gameState: this.gameState,
+                timestamp: Date.now()
+            };
+
+            // Сохраняем в локальное хранилище как резервную копию
+            localStorage.setItem('lovePuzzleProgress', JSON.stringify(gameState));
+            
+            // Отправляем в бота через Web App
+            if (this.tg) {
+                const progressData = {
+                    type: 'save_progress',
+                    progress: gameState,
+                    moves: this.totalMoves || 0
+                };
+                
+                this.tg.sendData(JSON.stringify(progressData));
+            }
+            
+            console.log('Прогресс сохранен');
+            this.showLoveMessage("💾 Прогресс сохранен!");
+        } catch (error) {
+            console.error('Ошибка сохранения прогресса:', error);
+            this.showLoveMessage("❌ Ошибка сохранения прогресса");
+        }
+    }
+
+    async loadProgress() {
+        try {
+            // Пробуем загрузить из локального хранилища
+            const saved = localStorage.getItem('lovePuzzleProgress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                
+                // Проверяем, не устарели ли данные (больше 7 дней)
+                const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+                if (progress.timestamp && progress.timestamp > weekAgo) {
+                    this.currentLevel = progress.currentLevel || 0;
+                    this.grid = progress.grid || [];
+                    this.xp = progress.xp || 0;
+                    this.xpToNext = progress.xpToNext || 10;
+                    this.maxNumber = progress.maxNumber || 8;
+                    this.messageCount = progress.messageCount || 0;
+                    this.gameState = progress.gameState || 'playing';
+                    
+                    console.log('Прогресс загружен из локального хранилища');
+                    return true;
+                }
+            }
+            
+            // Запрашиваем прогресс у бота
+            if (this.tg) {
+                const loadRequest = {
+                    type: 'load_progress'
+                };
+                this.tg.sendData(JSON.stringify(loadRequest));
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Ошибка загрузки прогресса:', error);
+            return false;
+        }
+    }
+
+    // Автосохранение при изменениях
+    setupAutoSave() {
+        // Сохраняем при каждом значимом действии
+        const originalMethods = {
+            mergeChain: this.mergeChain.bind(this),
+            activateBonus: this.activateBonus.bind(this),
+            nextLevel: this.nextLevel.bind(this),
+            resetGame: this.resetGame.bind(this)
+        };
+        
+        // Переопределяем методы с автосохранением
+        this.mergeChain = (...args) => {
+            const result = originalMethods.mergeChain(...args);
+            setTimeout(() => this.saveProgress(), 100);
+            return result;
+        };
+        
+        this.activateBonus = (...args) => {
+            const result = originalMethods.activateBonus(...args);
+            setTimeout(() => this.saveProgress(), 100);
+            return result;
+        };
+        
+        this.nextLevel = (...args) => {
+            const result = originalMethods.nextLevel(...args);
+            setTimeout(() => this.saveProgress(), 100);
+            return result;
+        };
+        
+        this.resetGame = (...args) => {
+            const result = originalMethods.resetGame(...args);
+            setTimeout(() => this.saveProgress(), 100);
+            return result;
+        };
+        
+        // Сохраняем при закрытии/перезагрузке
+        window.addEventListener('beforeunload', () => {
+            this.saveProgress();
+        });
+        
+        // Периодическое сохранение каждые 30 секунд
+        setInterval(() => {
+            if (this.gameState === 'playing') {
+                this.saveProgress();
+            }
+        }, 30000);
     }
     
     createFloatingHearts() {
@@ -238,6 +362,7 @@ class LoveNumberPuzzle {
             // Game buttons
             document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
             document.getElementById('nextLevelBtn').addEventListener('click', () => this.nextLevel());
+            document.getElementById('saveBtn').addEventListener('click', () => this.saveProgress());
             
             document.getElementById('bonus-destroy').addEventListener('click', () => this.activateBonus('destroy'));
             document.getElementById('bonus-shuffle').addEventListener('click', () => this.activateBonus('shuffle'));
@@ -250,12 +375,26 @@ class LoveNumberPuzzle {
         }
     }
     
-    startGame() {
+    async startGame() {
         try {
-            this.initGame(0);
+            console.log('Starting game...');
+            const hasProgress = await this.loadProgress();
+            
+            if (!hasProgress) {
+                this.initGame(0);
+            } else {
+                this.render();
+                this.updateInfo();
+                this.updateBonusButtons();
+                this.showLevelSelect();
+                this.showLoveMessage("Добро пожаловать обратно, моя любовь! 💖 Твой прогресс загружен.");
+            }
+            
             this.showScreen('game');
         } catch (error) {
             console.error("Ошибка запуска игры:", error);
+            this.initGame(0);
+            this.showScreen('game');
         }
     }
     
@@ -274,6 +413,7 @@ class LoveNumberPuzzle {
             this.activeBonus = null;
             this.gameState = 'playing';
             this.messageCount = 0;
+            this.totalMoves = 0;
             
             document.getElementById('messageCount').textContent = '0';
             
@@ -438,6 +578,8 @@ class LoveNumberPuzzle {
     
     mergeChain() {
         try {
+            this.totalMoves++;
+            
             const last = this.selected[this.selected.length - 1];
             const newValue = this.chainNumbers.reduce((sum, val) => sum + val, 0);
             
