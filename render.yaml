@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: love-puzzle-bot
+    env: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEB_APP_URL
+        value: https://qwaszx112233.github.io/telegram-love-puzzle/
