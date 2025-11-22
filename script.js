@@ -308,43 +308,43 @@ class LoveNumberPuzzle {
     
     initializeEventListeners() {
         try {
-            // Main menu buttons
+             // Main menu buttons
             document.getElementById('playBtn').addEventListener('click', () => {
                 this.startGame();
             });
-            
+        
             document.getElementById('settingsBtn').addEventListener('click', () => {
                 this.showScreen('settings');
             });
-            
+        
             document.getElementById('aboutBtn').addEventListener('click', () => {
                 this.showScreen('about');
             });
-            
+        
             // Home button in game screen
             document.getElementById('homeBtn').addEventListener('click', () => {
                 this.showScreen('mainMenu');
             });
-            
+        
             // Back buttons
             document.getElementById('backBtn').addEventListener('click', () => {
                 this.showScreen('mainMenu');
             });
-            
+        
             document.getElementById('backFromSettingsBtn').addEventListener('click', () => {
                 this.showScreen('mainMenu');
             });
-            
+        
             document.getElementById('backFromAboutBtn').addEventListener('click', () => {
                 this.showScreen('mainMenu');
             });
-            
+        
             // Victory screen buttons
             document.getElementById('playAgainBtn').addEventListener('click', () => {
                 this.hideVictoryScreen();
                 this.startGame();
             });
-            
+        
             document.getElementById('closeWebAppBtn').addEventListener('click', () => {
                 if (this.isTelegram) {
                     this.tg.close();
@@ -352,28 +352,134 @@ class LoveNumberPuzzle {
                     this.showScreen('mainMenu');
                 }
             });
-            
+        
             // Settings
             document.getElementById('saveSettingsBtn').addEventListener('click', () => {
                 this.showScreen('mainMenu');
             });
-            
+        
             // Game buttons
             document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
             document.getElementById('nextLevelBtn').addEventListener('click', () => this.nextLevel());
             document.getElementById('saveGameBtn').addEventListener('click', () => this.manualSave());
             document.getElementById('resetProgressBtn').addEventListener('click', () => this.resetProgress());
-            
+        
             document.getElementById('bonus-destroy').addEventListener('click', () => this.activateBonus('destroy'));
             document.getElementById('bonus-shuffle').addEventListener('click', () => this.activateBonus('shuffle'));
             document.getElementById('bonus-explosion').addEventListener('click', () => this.activateBonus('explosion'));
-            
+        
             document.addEventListener('contextmenu', e => e.preventDefault());
-            
+        
+            // ДОБАВЛЕНО: Инициализация обработки касаний для сетки
+            this.initializeGridTouchHandling();
+        
         } catch (error) {
             console.error("Ошибка инициализации обработчиков событий:", error);
         }
     }
+
+    initializeGridTouchHandling() {
+        const grid = document.getElementById('grid');
+        if (!grid) return;
+
+        // Обработчики для мыши
+        grid.addEventListener('mousedown', (e) => this.handlePointerStart(e));
+        document.addEventListener('mousemove', (e) => this.handlePointerMove(e));
+        document.addEventListener('mouseup', () => this.handlePointerEnd());
+
+        // Обработчики для касаний
+        grid.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.handlePointerStart(e.touches[0]);
+        }, { passive: false });
+
+        grid.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            this.handlePointerMove(e.touches[0]);
+        }, { passive: false });
+
+        grid.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.handlePointerEnd();
+        }, { passive: false });
+
+        // Предотвращаем контекстное меню
+        grid.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+
+    handlePointerStart(e) {
+        if (this.gameState !== 'playing') return;
+    
+        const cell = this.getCellFromPoint(e.clientX, e.clientY);
+        if (!cell) return;
+
+        if (this.activeBonus === 'destroy') {
+            this.useDestroyBonus(cell.x, cell.y);
+            return;
+        }
+
+        if (this.activeBonus === 'explosion') {
+            this.useExplosionBonus(cell.x, cell.y);
+            return;
+        }
+
+        this.isDragging = true;
+        this.selected = [{x: cell.x, y: cell.y}];
+        this.chainNumbers = [this.grid[cell.x][cell.y].number];
+        this.render();
+    }
+
+    handlePointerMove(e) {
+        if (!this.isDragging || this.activeBonus) return;
+    
+        const cell = this.getCellFromPoint(e.clientX, e.clientY);
+        if (!cell) return;
+
+        this.handleCellHover(cell.x, cell.y);
+    }
+
+    handlePointerEnd() {
+        if (!this.isDragging) return;
+    
+        if (this.selected.length >= 2) {
+            this.mergeChain();
+        } else {
+            this.selected = [];
+            this.chainNumbers = [];
+            this.render();
+        }
+    
+        this.isDragging = false;
+    }
+
+    getCellFromPoint(clientX, clientY) {
+        const grid = document.getElementById('grid');
+        if (!grid) return null;
+    
+        const rect = grid.getBoundingClientRect();
+    
+        // Проверяем, что клик внутри сетки
+        if (clientX < rect.left || clientX > rect.right || 
+            clientY < rect.top || clientY > rect.bottom) {
+            return null;
+        }
+    
+        const cellWidth = rect.width / this.GRID_W;
+        const cellHeight = rect.height / this.GRID_H;
+    
+        const gridX = clientX - rect.left;
+        const gridY = clientY - rect.top;
+    
+        const cellX = Math.floor(gridX / cellWidth);
+        const cellY = Math.floor(gridY / cellHeight);
+    
+        if (cellX >= 0 && cellX < this.GRID_W && cellY >= 0 && cellY < this.GRID_H) {
+            return { x: cellX, y: cellY };
+        }
+    
+        return null;
+    }
+
     
     startGame() {
         try {
@@ -456,9 +562,6 @@ class LoveNumberPuzzle {
                         cell.classList.add('merged');
                     }
                     
-                    cell.addEventListener('mousedown', (e) => this.handleCellStart(e, x, y));
-                    cell.addEventListener('touchstart', (e) => this.handleCellStart(e, x, y), { passive: false });
-                    
                     const inner = document.createElement('div');
                     inner.className = 'cell-inner';
                     inner.textContent = this.formatNumber(this.grid[x][y].number);
@@ -467,11 +570,6 @@ class LoveNumberPuzzle {
                     gridDiv.appendChild(cell);
                 }
             }
-            
-            document.addEventListener('mousemove', (e) => this.handleMove(e));
-            document.addEventListener('touchmove', (e) => this.handleMove(e), { passive: false });
-            document.addEventListener('mouseup', () => this.handleEnd());
-            document.addEventListener('touchend', () => this.handleEnd());
             
             this.updateXPBar();
             
@@ -546,24 +644,6 @@ class LoveNumberPuzzle {
             }
         } catch (error) {
             console.error("Ошибка обработки наведения на ячейку:", error);
-        }
-    }
-    
-    handleEnd() {
-        if (!this.isDragging) return;
-        
-        try {
-            if (this.selected.length >= 2) {
-                this.mergeChain();
-            } else {
-                this.selected = [];
-                this.chainNumbers = [];
-                this.render();
-            }
-            
-            this.isDragging = false;
-        } catch (error) {
-            console.error("Ошибка обработки завершения выбора:", error);
         }
     }
     
