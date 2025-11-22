@@ -418,42 +418,6 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
-.cell.valid-next {
-  box-shadow: 0 0 0 2px var(--secondary-color);
-}
-
-/* Кольори для різних чисел */
-.cell[data-number="2"] { background: #ffb6c1; }
-.cell[data-number="4"] { background: #ffd700; }
-.cell[data-number="8"] { background: #98fb98; }
-.cell[data-number="16"] { background: #87ceeb; }
-.cell[data-number="32"] { background: #da70d6; }
-.cell[data-number="64"] { background: #ffa07a; }
-.cell[data-number="128"] { background: #f0e68c; }
-.cell[data-number="256"] { background: #dda0dd; }
-.cell[data-number="512"] { background: #b0e0e6; }
-.cell[data-number="1024"] { background: #ffb347; }
-.cell[data-number="2048"] { background: #c9a0dc; }
-.cell[data-number="4096"] { background: #77dd77; }
-.cell[data-number="8192"] { background: #ff6961; }
-.cell[data-number="16384"] { background: #aec6cf; }
-.cell[data-number="32768"] { background: #f49ac2; }
-.cell[data-number="65536"] { background: #cb99c9; }
-.cell[data-number="131072"] { background: #ffb6c1; }
-.cell[data-number="262144"] { background: #ffd700; }
-.cell[data-number="524288"] { background: #98fb98; }
-.cell[data-number="1048576"] { background: #87ceeb; }
-.cell[data-number="2097152"] { background: #da70d6; }
-.cell[data-number="4194304"] { background: #ffa07a; }
-.cell[data-number="8388608"] { background: #f0e68c; }
-.cell[data-number="16777216"] { background: #dda0dd; }
-.cell[data-number="33554432"] { background: #b0e0e6; }
-.cell[data-number="67108864"] { background: #ffb347; }
-.cell[data-number="134217728"] { background: #c9a0dc; }
-.cell[data-number="268435456"] { background: #77dd77; }
-.cell[data-number="536870912"] { background: #ff6961; }
-.cell[data-number="1073741824"] { background: #aec6cf; }
-
 .controls {
   display: flex;
   gap: 6px;
@@ -493,6 +457,26 @@ body {
   background: var(--white);
   color: var(--primary-color);
   border: 2px solid var(--accent-color);
+}
+
+/* Стили для кнопок сохранения */
+.save-controls {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
+  width: 100%;
+}
+
+.save-controls .btn {
+  flex: none;
+  min-width: 150px;
+  background: var(--white);
+  color: var(--text-color);
+  border: 2px solid var(--accent-color);
+}
+
+.save-controls .btn:active {
+  background: #ffeef2;
 }
 
 .hearts {
@@ -635,7 +619,7 @@ body {
   background: var(--white);
 }
 
-/* Landscape orientation support */
+/* Адаптивные стили */
 @media (max-height: 500px) and (orientation: landscape) {
   .game-screen {
     padding: 5px 5px 3px;
@@ -680,6 +664,10 @@ body {
   .level-select {
     max-height: 40px;
   }
+  
+  .save-controls {
+    margin: 3px 0;
+  }
 }
 
 @media (max-width: 320px) {
@@ -704,6 +692,11 @@ body {
   .level-btn {
     width: 26px;
     font-size: 0.6rem;
+  }
+  
+  .save-controls .btn {
+    min-width: 130px;
+    font-size: 0.7rem;
   }
 }
 
@@ -765,4 +758,20 @@ body {
   .cell-inner {
     font-size: clamp(0.6rem, 1.5vw, 0.8rem);
   }
+}
+
+.swipe-hint {
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.romantic-subtitle {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: bold;
 }
