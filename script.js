@@ -252,90 +252,51 @@ class LoveNumberPuzzle {
     
 
     async saveGameProgress() {
-        if (this.isSaving) {
-            console.log('🔄 Уже сохраняем, пропускаем...');
-            return;
-        }
-        
+        if (this.isSaving) return;
         this.isSaving = true;
-        const saveId = Date.now();
-        
+
+        const saveData = {
+            currentLevel: this.currentLevel,
+            xp: this.xp,
+            messageCount: this.messageCount,
+            grid: JSON.parse(JSON.stringify(this.grid)),
+            maxNumber: this.maxNumber,
+            timestamp: Date.now(),
+            version: '2.1'
+        };
+
+        // 1. Локальне збереження (на всяк випадок)
         try {
-            console.log(`💾 Начинаем сохранение #${saveId}...`);
-            
-            const gameState = {
-                currentLevel: this.currentLevel,
-                xp: this.xp,
-                messageCount: this.messageCount,
-                grid: JSON.parse(JSON.stringify(this.grid)), // глибока копія!
-                maxNumber: this.maxNumber,
-                timestamp: Date.now(),
-                version: '2.1'
-            };
-    
-            
-            // 🔄 МНОГОУРОВНЕВОЕ СОХРАНЕНИЕ
-            
-            // 1. Основное сохранение
-            const mainSave = JSON.stringify(gameState);
-            localStorage.setItem('lovePuzzle_main', mainSave);
-            console.log('✅ Основное сохранение завершено');
-            
-            // 2. Резервная копия 1 (немедленно)
-            localStorage.setItem('lovePuzzle_backup1', mainSave);
-            
-            // 3. Резервная копия 2 (через 100мс)
-            setTimeout(() => {
-                localStorage.setItem('lovePuzzle_backup2', mainSave);
-                console.log('✅ Резервная копия 2 создана');
-            }, 100);
-            
-            // 4. Резервная копия 3 (в другом формате)
-            const compactSave = JSON.stringify({
-                level: this.currentLevel,
-                xp: this.xp,
-                messages: this.messageCount,
-                t: Date.now()
+            localStorage.setItem('lovePuzzle_main', JSON.stringify(saveData));
+        } catch (e) {}
+
+        // 2. ВІДПРАВЛЯЄМО НА СЕРВЕР (головне!)
+        if (this.chatId && !this.isTelegram) return; // тільки в Telegram WebApp
+
+        try {
+            const response = await fetch('https://telegram-love-puzzle.onrender.com/api/save_progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: this.chatId,
+                    level: this.currentLevel + 1,           // бо в боті рівні з 1
+                    score: this.xp,
+                    phrases_found: this.messageCount,
+                    username: this.username,
+                    first_name: this.firstName
+                })
             });
-            localStorage.setItem('lovePuzzle_compact', compactSave);
-            
-            // 5. Сохранение в SessionStorage как дополнительная защита
-            sessionStorage.setItem('lovePuzzle_session', mainSave);
-            
-            console.log('💾 Прогресс сохранен:', {
-                level: this.currentLevel,
-                xp: this.xp,
-                messages: this.messageCount,
-                saveId: saveId
-            });
-            
-            // Показываем подтверждение (только раз в 10 секунд)
-            const now = Date.now();
-            if (!this.lastSaveNotify || now - this.lastSaveNotify > 10000) {
-                this.showLoveMessage("Прогрес збережено! 💾");
-                this.lastSaveNotify = now;
+
+            if (response.ok) {
+                this.showLoveMessage("Прогрес збережено в хмарі!");
+                console.log("Прогрес успішно відправлено на сервер");
             }
-            
         } catch (error) {
-            console.error('❌ Критическая ошибка сохранения:', error);
-            
-            // Попытка экстренного сохранения минимальных данных
-            try {
-                const emergencySave = JSON.stringify({
-                    level: this.currentLevel,
-                    xp: this.xp,
-                    messages: this.messageCount,
-                    emergency: true,
-                    timestamp: Date.now()
-                });
-                localStorage.setItem('lovePuzzle_emergency', emergencySave);
-                console.log('🚨 Экстренное сохранение выполнено');
-            } catch (e) {
-                console.error('💥 Даже экстренное сохранение не удалось:', e);
-            }
-        } finally {
-            this.isSaving = false;
+            console.error("Помилка відправки на сервер:", error);
+            this.showLoveMessage("Прогрес збережено локально");
         }
+
+        this.isSaving = false;
     }
 
     async loadGameProgress() {
@@ -1120,6 +1081,18 @@ class LoveNumberPuzzle {
             this.showLoveMessage(message);
             this.createHeartsAnimation();
             
+            // Відправляємо фразу в бот
+            if (this.chatId && phraseId && this.isTelegram) {
+                fetch('https://telegram-love-puzzle.onrender.com/api/add_phrase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: this.chatId,
+                        phrase_id: phraseId
+                    })
+                });
+            }
+
             // Сохраняем фразу в бота
             if (phraseId && this.isTelegram) {
                 this.addPhraseToBot(phraseId);
