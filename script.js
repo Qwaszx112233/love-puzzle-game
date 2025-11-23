@@ -116,9 +116,6 @@ class LoveNumberPuzzle {
         this.userId = this.getUserId();
         this.isSaving = false;
 
-        // URL вашего бота на Render (ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ URL)
-        this.BOT_API_URL = 'https://telegram-love-puzzle.onrender.com';
-        
         // Инициализация с загрузкой сохранения
         this.currentLevel = 0;
         this.grid = [];
@@ -131,6 +128,7 @@ class LoveNumberPuzzle {
         this.activeBonus = null;
         this.gameState = 'playing';
         this.messageCount = 0;
+        this.lastSaveNotify = null;
         
         this.createFloatingHearts();
         this.initializeEventListeners();
@@ -147,7 +145,7 @@ class LoveNumberPuzzle {
         this.loadGameProgress().then(() => {
             console.log('Игра инициализирована с загруженным прогрессом');
         });
-        
+
         // Автосохранение
         this.setupAutoSave();
         
@@ -275,15 +273,12 @@ class LoveNumberPuzzle {
                 currentLevel: this.currentLevel,
                 xp: this.xp,
                 messageCount: this.messageCount,
-                grid: this.grid,
+                grid: JSON.parse(JSON.stringify(this.grid)), // глибока копія!
                 maxNumber: this.maxNumber,
-                selected: this.selected,
-                activeBonus: this.activeBonus,
-                gameState: this.gameState,
                 timestamp: Date.now(),
-                version: '2.0',
-                saveId: saveId
+                version: '2.1'
             };
+    
             
             // 🔄 МНОГОУРОВНЕВОЕ СОХРАНЕНИЕ
             
@@ -892,7 +887,6 @@ class LoveNumberPuzzle {
             this.currentLevel = levelNum;
             const level = this.levels[this.currentLevel];
 
-            this.xp = 0;
             this.xpToNext = level.xpToNext;
             this.maxNumber = level.max;
             this.selected = [];
@@ -903,17 +897,11 @@ class LoveNumberPuzzle {
             this.messageCount = 0;
 
             // Создаем новую сетку только если нет сохраненной
-            if (!this.grid || this.grid.length === 0) {
-                this.grid = [];
-                for (let x = 0; x < this.GRID_W; x++) {
-                    this.grid[x] = [];
-                    for (let y = 0; y < this.GRID_H; y++) {
-                        this.grid[x][y] = {
-                            number: level.numbers[Math.floor(Math.random() * level.numbers.length)], 
-                            merged: false
-                        };
-                    }
-                }
+            if (!this.grid || this.grid.length === 0 || this.grid[0].length === 0) {
+                // генеруємо нову сітку
+            } else {
+                // сітка вже є — нічого не робимо, просто оновлюємо рівень
+                console.log("Використовуємо збережену сітку");
             }
 
             document.getElementById('messageCount').textContent = this.messageCount;
@@ -1435,46 +1423,6 @@ getBonusEmoji(bonusType) {
     };
     return emojis[bonusType] || '🎁';
 }
-    
-    showLevelSelect() {
-     // Старая функция - теперь не используется
-    console.log("Эта функция больше не используется");
-    }
-
-    // Новая функция отрисовки большого выбора уровней
-    renderLevelSelectLarge() {
-        const container = document.getElementById('levelSelectLarge');
-        if (!container) return;
-    
-        container.innerHTML = "";
-    
-        for (let i = 0; i < this.levels.length; i++) {
-            const btn = document.createElement('button');
-            btn.className = "level-btn-large";
-            btn.textContent = i + 1;
-        
-            // Показываем пройденные уровни с звездочкой
-            if (i < this.currentLevel) {
-                btn.textContent = "⭐ " + (i + 1);
-            }
-        
-            if (i === this.currentLevel) {
-                btn.classList.add("selected");
-                btn.textContent = "🎯 " + (i + 1);
-            }
-        
-            btn.addEventListener('click', () => {
-                this.currentLevel = i;
-                this.initGame(i);
-                this.showScreen('game');
-                this.saveGameProgress();
-                this.showLoveMessage(`Обрано рівень ${i + 1}! 💫`);
-            });
-        
-            container.appendChild(btn);
-        }
-    }
-
 
     autoNextLevel() {
         try {
