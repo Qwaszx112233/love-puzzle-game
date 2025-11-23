@@ -95,6 +95,52 @@ class LoveNumberPuzzle {
         document.addEventListener('dblclick', (e) => e.preventDefault());
     }
     
+    // Новая функция для показа экрана выбора уровня
+    showLevelSelectScreen() {
+        console.log("Показываем экран выбора уровня");
+        this.showScreen('levelSelect');
+        this.renderLevelSelectLarge();
+    }
+
+    // Новая функция отрисовки большого выбора уровней
+    renderLevelSelectLarge() {
+        const container = document.getElementById('levelSelectLarge');
+        if (!container) {
+            console.error("Контейнер levelSelectLarge не найден!");
+            return;
+        }
+        
+        container.innerHTML = "";
+        
+        for (let i = 0; i < this.levels.length; i++) {
+            const btn = document.createElement('button');
+            btn.className = "level-btn-large";
+            
+            // Определяем текст кнопки в зависимости от прогресса
+            if (i < this.currentLevel) {
+                btn.textContent = "⭐ " + (i + 1); // Пройденные уровни
+            } else if (i === this.currentLevel) {
+                btn.textContent = "🎯 " + (i + 1); // Текущий уровень
+                btn.classList.add("selected");
+            } else {
+                btn.textContent = (i + 1); // Будущие уровни
+            }
+            
+            btn.addEventListener('click', () => {
+                console.log("Выбран уровень:", i + 1);
+                this.currentLevel = i;
+                this.initGame(i);
+                this.showScreen('game');
+                this.saveGameProgress();
+                this.showLoveMessage(`Обрано рівень ${i + 1}! 💫`);
+            });
+            
+            container.appendChild(btn);
+        }
+        
+        console.log("Отрисовано кнопок уровней:", this.levels.length);
+    }
+
     debugBonuses() {
         console.log("=== ДЕБАГ БОНУСОВ ===");
         console.log("Текущие очки XP:", this.xp);
