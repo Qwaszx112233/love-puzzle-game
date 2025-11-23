@@ -135,12 +135,6 @@ class LoveNumberPuzzle {
         this.showScreen('mainMenu');
         this.setupThemeHandling();
         
-        this.initializeEventListeners();
-        this.showScreen('mainMenu');
-
-        // Добавляем обработку темной темы
-        this.setupThemeHandling();
-        
         // Загружаем сохраненный прогресс
         this.loadGameProgress().then(() => {
             console.log('Игра инициализирована с загруженным прогрессом');
