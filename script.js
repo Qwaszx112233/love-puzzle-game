@@ -349,6 +349,11 @@ class LoveNumberPuzzle {
     
     initializeEventListeners() {
         try {
+             // Main menu buttons
+            document.getElementById('playBtn').addEventListener('click', () => {
+                this.startGame();
+            });
+        
             document.getElementById('levelSelectBtn').addEventListener('click', () => {
                 this.showLevelSelectScreen();
             });
@@ -357,11 +362,6 @@ class LoveNumberPuzzle {
                 this.showScreen('mainMenu');
             });
 
-             // Main menu buttons
-            document.getElementById('playBtn').addEventListener('click', () => {
-                this.startGame();
-            });
-        
             document.getElementById('settingsBtn').addEventListener('click', () => {
                 this.showScreen('settings');
             });
