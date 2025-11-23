@@ -300,6 +300,71 @@ body {
   color: var(--primary-color);
   font-weight: bold;
   font-size: 0.6rem;
+
+  /* Стили для большого выбора уровней */
+.level-select-large {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 20px;
+    max-width: 320px;
+    margin: 0 auto;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.level-btn-large {
+    padding: 15px 0;
+    background: var(--cell-color);
+    color: var(--text-color);
+    border: 3px solid var(--accent-color);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.level-btn-large:hover {
+    transform: scale(1.05);
+}
+
+.level-btn-large.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    transform: scale(1.08);
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+}
+
+.level-btn-large:active {
+    transform: scale(0.95);
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 480px) {
+    .level-select-large {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        padding: 15px;
+    }
+    
+    .level-btn-large {
+        padding: 12px 0;
+        font-size: 1.1rem;
+        min-height: 45px;
+    }
+}
+
+@media (max-width: 360px) {
+    .level-select-large {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
 }
 
 .level-select {
@@ -338,7 +403,30 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-height: 50vh;
+  max-height: 65vh;
+}
+
+.level-btn-large {
+    padding: 12px 0;
+    background: var(--cell-color);
+    color: var(--text-color);
+    border: 2px solid var(--accent-color);
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.level-btn-large.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.level-btn-large:active {
+    transform: scale(0.95);
 }
 
 .grid {

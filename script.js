@@ -349,6 +349,14 @@ class LoveNumberPuzzle {
     
     initializeEventListeners() {
         try {
+            document.getElementById('levelSelectBtn').addEventListener('click', () => {
+                this.showLevelSelectScreen();
+            });
+            
+            document.getElementById('backFromLevelSelectBtn').addEventListener('click', () => {
+                this.showScreen('mainMenu');
+            });
+
              // Main menu buttons
             document.getElementById('playBtn').addEventListener('click', () => {
                 this.startGame();
@@ -604,7 +612,6 @@ class LoveNumberPuzzle {
             this.updateInfo();
             this.showLoveMessage("Об'єднуй числа та отримуй любовні фрази! 💕");
             this.updateBonusButtons();
-            this.showLevelSelect();
             
         } catch (error) {
             console.error("Ошибка инициализации игры:", error);
@@ -1098,36 +1105,45 @@ getBonusEmoji(bonusType) {
 }
     
     showLevelSelect() {
-        try {
-            const sel = document.getElementById('level-select');
-            if (!sel) return;
-            
-            sel.innerHTML = "";
-            
-            for (let i = 0; i < this.levels.length; i++) {
-                const btn = document.createElement('button');
-                btn.className = "level-btn";
-                btn.textContent = i + 1;
-                
-                if (i === this.currentLevel) {
-                    btn.classList.add("selected");
-                }
-                
-                btn.addEventListener('click', () => {
-                    this.currentLevel = i;
-                    this.initGame(i);
-                    
-                    // СОХРАНЕНИЕ ПРИ СМЕНЕ УРОВНЯ
-                    this.saveGameProgress();
-                });
-                
-                sel.appendChild(btn);
+     // Старая функция - теперь не используется
+    console.log("Эта функция больше не используется");
+    }
+
+    // Новая функция отрисовки большого выбора уровней
+    renderLevelSelectLarge() {
+        const container = document.getElementById('levelSelectLarge');
+        if (!container) return;
+    
+        container.innerHTML = "";
+    
+        for (let i = 0; i < this.levels.length; i++) {
+            const btn = document.createElement('button');
+            btn.className = "level-btn-large";
+            btn.textContent = i + 1;
+        
+            // Показываем пройденные уровни с звездочкой
+            if (i < this.currentLevel) {
+                btn.textContent = "⭐ " + (i + 1);
             }
-        } catch (error) {
-            console.error("Ошибка показа выбора уровня:", error);
+        
+            if (i === this.currentLevel) {
+                btn.classList.add("selected");
+                btn.textContent = "🎯 " + (i + 1);
+            }
+        
+            btn.addEventListener('click', () => {
+                this.currentLevel = i;
+                this.initGame(i);
+                this.showScreen('game');
+                this.saveGameProgress();
+                this.showLoveMessage(`Обрано рівень ${i + 1}! 💫`);
+            });
+        
+            container.appendChild(btn);
         }
     }
-    
+
+
     autoNextLevel() {
         try {
             if (this.currentLevel < this.MAX_LEVEL - 1) {

@@ -29,6 +29,7 @@
     <div class="romantic-subtitle">Для моєї найкращої дружини</div> 
     <div class="menu-buttons"> 
       <button class="menu-btn" id="playBtn">🎮 Почати гру кохання</button> 
+       <button class="menu-btn" id="levelSelectBtn">⭐ Обрати рівень</button>
       <button class="menu-btn secondary" id="settingsBtn">💝 Налаштування</button> 
       <button class="menu-btn secondary" id="aboutBtn">🌹 Про наше кохання</button> 
     </div> 
@@ -71,10 +72,6 @@
         <button class="bonus-btn" id="bonus-explosion"> 💥 Вибух кохання <span class="bonus-cost">20</span> </button> 
       </div> 
 
-      <div class="level-select" id="level-select"></div> 
-
-      <div class="swipe-hint">👆 Проведи пальцем по числах для створення ланцюжка</div> 
-
       <div class="grid-container"> 
         <div class="grid" id="grid"></div> 
       </div> 
@@ -92,6 +89,17 @@
       </div>
     </div> 
   </div> 
+  
+  <!-- Level Select Screen -->
+  <div class="screen settings-screen hidden" id="levelSelectScreen">
+    <div class="settings-title">Обери рівень кохання 🌟</div>
+    <div class="level-select-large" id="levelSelectLarge">
+        <!-- Уровни будут добавлены через JavaScript -->
+    </div>
+    <div class="menu-buttons" style="margin-top: 20px;">
+        <button class="menu-btn secondary" id="backFromLevelSelectBtn">← Назад</button>
+    </div>
+  </div>
 
   <!-- Settings Screen --> 
   <div class="screen settings-screen hidden" id="settingsScreen"> 
