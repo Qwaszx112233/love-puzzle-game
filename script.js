@@ -916,29 +916,15 @@ class LoveNumberPuzzle {
     activateBonus(bonusType) {
     try {
         console.log(`Активируем бонус: ${bonusType}`);
-        console.log(`Текущий activeBonus: ${this.activeBonus}`);
-        console.log(`XP: ${this.xp}, Нужно: ${this.bonusCosts[bonusType]}`);
-        
-        // Если бонус уже активен - деактивируем
-        if (this.activeBonus === bonusType) {
-            console.log("Деактивируем бонус");
-            this.activeBonus = null;
-            this.updateBonusButtons();
-            this.render();
-            this.showLoveMessage("Бонус вимкнено 💫");
-            return;
-        }
         
         // Проверяем достаточно ли XP
         if (this.xp < this.bonusCosts[bonusType]) {
-            console.log("Недостаточно XP");
             this.showLoveMessage(`Потрібно ${this.bonusCosts[bonusType]} очків кохання! ❤️‍🔥`);
             return;
         }
         
         // Если бонус "shuffle" - сразу используем
         if (bonusType === 'shuffle') {
-            console.log("Используем shuffle сразу");
             this.xp -= this.bonusCosts.shuffle;
             this.shuffleGrid();
             this.showLoveMessage("Поле перемішано з любов'ю! 💫");
@@ -947,14 +933,18 @@ class LoveNumberPuzzle {
             return;
         }
         
-        // Для других бонусов - активируем режим
-        console.log(`Активируем режим бонуса: ${bonusType}`);
+        // Для destroy и explosion - активируем режим выбора
+        if (this.activeBonus === bonusType) {
+            // Уже активен этот бонус - ничего не делаем, ждем выбора клетки
+            this.showLoveMessage(`Обери клітинку для бонусу "${this.getBonusName(bonusType)}" 🎯`);
+            return;
+        }
+        
+        // Активируем новый бонус
         this.activeBonus = bonusType;
         this.updateBonusButtons();
         this.render();
-        this.showLoveMessage(`Бонус "${this.getBonusName(bonusType)}" активовано! Клацни на клітинку 💫`);
-        
-        console.log(`activeBonus после активации: ${this.activeBonus}`);
+        this.showLoveMessage(`Обери клітинку для бонусу "${this.getBonusName(bonusType)}" 🎯`);
         
     } catch (error) {
         console.error("Помилка активації бонуса:", error);
@@ -1064,31 +1054,48 @@ useExplosionBonus(x, y) {
 }
     
     updateBonusButtons() {
-        try {
-            const bonuses = ['destroy', 'shuffle', 'explosion'];
+    try {
+        const bonuses = ['destroy', 'shuffle', 'explosion'];
+        
+        bonuses.forEach(bonus => {
+            const btn = document.getElementById(`bonus-${bonus}`);
+            if (!btn) return;
             
-            bonuses.forEach(bonus => {
-                const btn = document.getElementById(`bonus-${bonus}`);
-                if (!btn) return;
-                
-                const cost = this.bonusCosts[bonus];
-                
-                if (this.activeBonus === bonus) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-                
-                if (this.xp < cost && this.activeBonus !== bonus) {
-                    btn.disabled = true;
-                } else {
-                    btn.disabled = false;
-                }
-            });
-        } catch (error) {
-            console.error("Ошибка обновления кнопок бонусов:", error);
+            const cost = this.bonusCosts[bonus];
+            
+            if (this.activeBonus === bonus) {
+                btn.classList.add('active');
+                btn.innerHTML = `✅ ${this.getBonusName(bonus)} <span class="bonus-cost">${cost}</span>`; // Добавляем галочку
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = `${this.getBonusEmoji(bonus)} ${this.getBonusName(bonus)} <span class="bonus-cost">${cost}</span>`;
+            }
+            
+            if (this.xp < cost && this.activeBonus !== bonus) {
+                btn.disabled = true;
+            } else {
+                btn.disabled = false;
+            }
+        });
+        
+        // Показываем подсказку если бонус активен
+        if (this.activeBonus) {
+            this.showLoveMessage(`Бонус "${this.getBonusName(this.activeBonus)}" активовано! Клацни на клітинку 🎯`);
         }
+    } catch (error) {
+        console.error("Ошибка обновления кнопок бонусов:", error);
     }
+}
+
+// Добавьте эту функцию для эмодзи
+getBonusEmoji(bonusType) {
+    const emojis = {
+        'destroy': '💖',
+        'shuffle': '🔄', 
+        'explosion': '💥'
+    };
+    return emojis[bonusType] || '🎁';
+}
     
     showLevelSelect() {
         try {
