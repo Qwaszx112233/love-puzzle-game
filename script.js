@@ -59,6 +59,9 @@ class LoveNumberPuzzle {
         // Система сохранения
         this.userId = this.getUserId();
         this.isSaving = false;
+
+        // URL вашего бота на Render (ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ URL)
+        this.BOT_API_URL = 'https://telegram-love-puzzle.onrender.com';
         
         // Инициализация с загрузкой сохранения
         this.currentLevel = 0;
@@ -281,6 +284,153 @@ class LoveNumberPuzzle {
         localStorage.removeItem('lovePuzzleSave_' + this.userId);
         this.showLoveMessage("Дані скинуті! Починаємо з початку! 🔄");
         this.initGame(0);
+    }
+
+    // Функция для сохранения прогресса в бота
+    async saveProgressToBot(level, score, phrasesFound) {
+        try {
+            console.log('🔄 Пытаемся сохранить прогресс в бота...');
+        
+            // Получаем данные из Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp) {
+                const user = Telegram.WebApp.initDataUnsafe?.user;
+            
+                if (user && user.id) {
+                    const progressData = {
+                        chat_id: user.id,
+                        username: user.username || '',
+                        first_name: user.first_name || '',
+                        level: level,
+                        score: score,
+                        phrases_found: phrasesFound
+                    };
+                
+                    console.log('📤 Отправляем прогресс боту:', progressData);
+                
+                    // Отправляем данные на сервер бота
+                    const response = await fetch(this.BOT_API_URL + '/api/save_progress', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(progressData)
+                    });
+                
+                    const data = await response.json();
+                    console.log('📥 Ответ от бота:', data);
+                
+                    if (data.status === 'success') {
+                        console.log('✅ Прогресс успешно сохранен в бота');
+                        return true;
+                    } else {
+                        console.log('❌ Ошибка сохранения в бота:', data.message);
+                        return false;
+                    }
+                } else {
+                    console.log('ℹ️ Пользователь Telegram не найден');
+                    return false;
+                }
+            } else {
+                console.log('ℹ️ Не в Telegram Web App, сохраняем только локально');
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сохранения прогресса в бота:', error);
+            return false;
+        }
+    }
+
+    // Функция для добавления найденной фразы в бота
+    async addPhraseToBot(phraseId) {
+        try {
+            console.log('💖 Пытаемся сохранить фразу в бота...');
+        
+            if (window.Telegram && window.Telegram.WebApp) {
+                const user = Telegram.WebApp.initDataUnsafe?.user;
+            
+                if (user && user.id) {
+                    const phraseData = {
+                        chat_id: user.id,
+                        phrase_id: phraseId
+                    };
+                
+                    console.log('📤 Отправляем фразу боту:', phraseData);
+                
+                    const response = await fetch(this.BOT_API_URL + '/api/add_phrase', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(phraseData)
+                    });
+                
+                    const data = await response.json();
+                    console.log('📥 Ответ от бота:', data);
+                
+                    if (data.status === 'success') {
+                        console.log('✅ Фраза успешно сохранена в бота');
+                        return true;
+                    } else {
+                        console.log('❌ Ошибка сохранения фразы в бота:', data.message);
+                        return false;
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('❌ Ошибка добавления фразы в бота:', error);
+            return false;
+        }
+    }
+
+    // ОБНОВЛЕННАЯ функция сохранения игры
+    async saveGameProgress() {
+        if (this.isSaving) return;
+        
+        this.isSaving = true;
+        
+        try {
+            const gameState = {
+                currentLevel: this.currentLevel,
+                xp: this.xp,
+                messageCount: this.messageCount,
+                grid: this.grid,
+                maxNumber: this.maxNumber,
+                selected: this.selected,
+                activeBonus: this.activeBonus,
+                gameState: this.gameState,
+                timestamp: Date.now(),
+                version: '1.0'
+            };
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('lovePuzzleSave_' + this.userId, JSON.stringify(gameState));
+            localStorage.setItem('lovePuzzleUserId', this.userId);
+            
+            console.log('💾 Прогресс сохранен локально:', {
+                level: this.currentLevel,
+                xp: this.xp,
+                messages: this.messageCount
+            });
+            
+            // Сохраняем в бота (если в Telegram)
+            if (this.isTelegram) {
+                const success = await this.saveProgressToBot(
+                    this.currentLevel + 1, // уровень для бота (начинается с 1)
+                    this.xp,               // очки
+                    this.messageCount      // количество найденных фраз
+                );
+                
+                if (success) {
+                    this.showLoveMessage("Прогрес збережено в боті! 💾");
+                }
+            }
+            
+        } catch (error) {
+            console.error('❌ Ошибка сохранения:', error);
+        } finally {
+            this.isSaving = false;
+        }
     }
     
     // ==================== ОСНОВНЫЕ МЕТОДЫ ИГРЫ ====================
@@ -833,25 +983,37 @@ class LoveNumberPuzzle {
         }
     }
     
+    // ОБНОВЛЕННАЯ функция показа случайного сообщения
     showRandomLoveMessage(chainLength) {
         try {
             this.messageCount++;
             document.getElementById('messageCount').textContent = this.messageCount;
             
             let message;
+            let phraseId = null;
+            
             if (chainLength >= 6) {
                 message = "Вау! Ти геній кохання! 💖 Наша любов така ж сильна!";
+                phraseId = 1;
             } else if (chainLength >= 4) {
                 message = "Чудово! Наша любов росте як твої навички! 🌟";
+                phraseId = 2;
             } else {
                 const randomIndex = Math.floor(Math.random() * this.loveMessages.length);
                 message = this.loveMessages[randomIndex];
+                phraseId = randomIndex + 3; // ID начинаются с 3 для обычных фраз
             }
             
             this.showLoveMessage(message);
             this.createHeartsAnimation();
+            
+            // Сохраняем фразу в бота
+            if (phraseId && this.isTelegram) {
+                this.addPhraseToBot(phraseId);
+            }
+            
         } catch (error) {
-            console.error("Ошибка показа сообщения:", error);
+            console.error("❌ Ошибка показа сообщения:", error);
         }
     }
     
