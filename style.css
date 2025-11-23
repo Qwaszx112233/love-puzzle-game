@@ -1098,11 +1098,11 @@ body.dark-theme {
   --primary-color: #ff6b9d;
   --secondary-color: #ff8ab4;
   --accent-color: #d94a7e;
-  --bg-color: #1a0f14;
+  --bg-color: #68555e;
   --text-color: #ffffff;
   --white: #2d1b25;
   --shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
-  --cell-color: #2d1b25;
+  --cell-color: #57414d;
 }
 
 body.dark-theme {
@@ -1124,5 +1124,7 @@ body.dark-theme .controls,
 body.dark-theme .setting-item,
 body.dark-theme .victory-content,
 body.dark-theme .home-btn {
+  color: var(--text-color);
+  background: transparent;
   /* Стили наследуются из медиа-запроса выше */
 }
